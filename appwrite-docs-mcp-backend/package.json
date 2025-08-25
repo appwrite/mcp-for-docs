@@ -1,0 +1,49 @@
+{
+  "name": "appwrite-docs-mcp",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "mastra dev",
+    "build": "mastra build",
+    "start": "mastra start",
+    "build-mcp": "tsup scripts/stdio.ts --format esm --no-splitting --dts && chmod +x dist/stdio.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^2.0.20",
+    "@hono/node-server": "^1.19.0",
+    "@llamaindex/openai": "^0.4.17",
+    "@mastra/core": "^0.14.1",
+    "@mastra/libsql": "^0.13.4",
+    "@mastra/loggers": "^0.10.7",
+    "@mastra/mcp": "^0.10.12",
+    "@mastra/memory": "^0.13.1",
+    "@mastra/pg": "^0.14.2",
+    "@mastra/rag": "^1.1.0",
+    "@modelcontextprotocol/sdk": "^1.17.4",
+    "@octokit/rest": "^22.0.0",
+    "ai": "^5.0.23",
+    "fastembed": "^1.14.4",
+    "front-matter": "^4.0.2",
+    "giget": "^2.0.0",
+    "hono": "^4.9.4",
+    "llamaindex": "^0.11.27",
+    "mcp-framework": "^0.2.15",
+    "octokit": "^5.0.3",
+    "zod": "^4.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "mastra": "^0.10.23",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2"
+  }
+}
