@@ -7,3 +7,5 @@ dist
 *.db
 *.db-*
 content
+tmp
+local_cache

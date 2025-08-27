@@ -1,13 +1,9 @@
-import { PgVector } from "@mastra/pg";
+import { LibSQLVector } from "@mastra/libsql";
+import path from "path";
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
-const connectionString = process.env.DATABASE_URL;
-
-if (!connectionString) {
-  throw new Error("DATABASE_URL is not set");
-}
-
-export const vectorStore = new PgVector({
-  connectionString,
+export const vectorStore = new LibSQLVector({
+  connectionUrl: `file:${path.join(__dirname, "../../", "tmp", "vector-store.db")}`,
 });
 
 export type VectorStoreMetadata = {
@@ -19,4 +15,5 @@ export type VectorStoreMetadata = {
   createdAt: string;
   filePath: string;
   webPath: string;
-}
+};
+

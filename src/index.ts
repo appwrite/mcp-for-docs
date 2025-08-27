@@ -11,7 +11,7 @@ const server = new MCPServer({
     type: "http-stream",
     options: {
       port, // Port to listen on
-      endpoint: "/mcp", // HTTP endpoint path (default: "/mcp")
+      endpoint: "/", // HTTP endpoint path (default: "/mcp")
       responseMode: "batch", // Response mode: "batch" or "stream" (default: "batch")
       batchTimeout: 30000, // Timeout for batch responses in ms (default: 30000)
       headers: {

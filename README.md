@@ -24,7 +24,7 @@ There are three processes involved in setting up the MCP server, to ensure we ha
 
 Simply run the following command to initialize the MCP server:
 ```bash
-bun run init
+bun run prepare
 ```
 
 ### Starting the MCP server
@@ -38,7 +38,15 @@ Then, start the MCP server:
 bun run start
 ```
 
-The server should, by default, be available at `http://localhost:1234/mcp`.
+The server should, by default, be available at `http://localhost:1234`.
+
+## Setting up with Docker
+Run the following command to build the Docker image:
+```bash
+bun run init
+docker compose build
+docker compose up
+```
 
 ### Inspecting using the official MCP Inspector
 Simply run the following command to inspect the MCP server:
@@ -62,7 +70,7 @@ Here is a sample configuration file:
   "mcpServers": {
     "appwrite-docs-mcp": {
       "transport": "http",
-      "url": "http://localhost:1234/mcp"
+      "url": "http://localhost:1234"
     }
   }
 }

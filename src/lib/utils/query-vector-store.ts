@@ -1,7 +1,9 @@
-import { embed } from "ai";
-import { openai } from "@ai-sdk/openai";
 import { vectorStore, VectorStoreMetadata } from "../vector-store.js";
 import { getDocsFileContent } from "./content.js";
+import { embed } from "ai";
+import { openai } from "@ai-sdk/openai";
+
+const MIN_SCORE = process.env.MIN_SCORE ? parseFloat(process.env.MIN_SCORE) : 0.5;
 
 if (!process.env.OPENAI_API_KEY) {
   throw new Error("OPENAI_API_KEY is not set");
@@ -12,13 +14,14 @@ export async function queryVectorStore(query: string) {
   const queryEmbedding = await embed({
     model: openai.embedding("text-embedding-3-small"),
     value: query,
+    maxRetries: 3,
   });
 
   const results = await vectorStore.query({
     indexName: "docs" as any,
     queryVector: queryEmbedding.embedding,
     topK: 3,
-    minScore: 0.5,
+    minScore: MIN_SCORE,
   } as any);
 
   console.log(`Retrieved ${results.length} results`);

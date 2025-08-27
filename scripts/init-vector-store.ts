@@ -1,8 +1,10 @@
-import { embedMany } from "ai";
-import { openai } from "@ai-sdk/openai";
 import { MDocument } from "@mastra/rag"
 import { vectorStore, VectorStoreMetadata } from "../src/lib/vector-store";
 import { getContent } from "../src/lib/utils/content";
+import { embedMany } from "ai";
+import { openai } from "@ai-sdk/openai";
+
+const BATCH_SIZE = 50;
 
 async function initVectorStore() {
   // Delete index contents
@@ -30,38 +32,59 @@ async function initVectorStore() {
   // Add documents
   const docsPages = getContent();
 
+  console.log(`Processing ${docsPages.length} pages...`);
+
   // Process in batches
-  const batchSize = 20;
-  for (let i = 0; i < docsPages.length; i += batchSize) {
-    const batch = docsPages.slice(i, i + batchSize);
-    console.log(`Processing batch ${Math.floor(i / batchSize) + 1} of ${Math.ceil(docsPages.length / batchSize)}`);
-    await Promise.all(batch.map(page => embedDocsPage(page)));
+  for (let i = 0; i < docsPages.length; i += BATCH_SIZE) {
+    const batch = docsPages.slice(i, i + BATCH_SIZE);
+    console.log(`Processing batch ${Math.floor(i / BATCH_SIZE) + 1} of ${Math.ceil(docsPages.length / BATCH_SIZE)}`);
+    await Promise.all(batch.map(async page => {
+      try {
+        console.log(`Processing page: ${page.webPath}`);
+        await processPage(page);
+      } catch (error) {
+        console.error(`Error processing document ${page.filePath}:`, error);
+      }
+    }));
   }
+
+  console.log("Done");
 }
 
-async function embedDocsPage(page: ReturnType<typeof getContent>[0]) {
-  console.log(`Embeding document: ${page.filePath}`);
+export async function processPage(page: ReturnType<typeof getContent>[0]) {
+  const chunks = await getChunks(page);
+  const embeddings = await embedDocsPage(chunks);
+  await upsertDocsPageEmbeddings({ page, chunks, embeddings });
+  return { chunks, embeddings, page };
+}
 
+export async function getChunks(page: ReturnType<typeof getContent>[0]) {
   const doc = MDocument.fromMarkdown(page.body);
   const chunks = await doc.chunk({
     strategy: "markdown",
-    extract: {
-      summary: true,
-      keywords: true,
-    },
+    extract: {}
   });
 
-  console.log(`Creating embeddings for ${chunks.length} chunks for page ${page.webPath}`);
-  const embedManyResult = await embedMany({
+  return chunks;
+}
+
+async function embedDocsPage(chunks: Awaited<ReturnType<MDocument["chunk"]>>) {
+  const embeddingsResult = await embedMany({
     model: openai.embedding("text-embedding-3-small"),
     values: chunks.map(chunk => chunk.text),
+    maxRetries: 3,
   });
+  return embeddingsResult.embeddings;
+}
 
-  console.log(`Upserting ${embedManyResult.embeddings.length} embeddings for page ${page.webPath}`);
-  
+async function upsertDocsPageEmbeddings({ page, chunks, embeddings }: {
+  page: ReturnType<typeof getContent>[0],
+  chunks: Awaited<ReturnType<MDocument["chunk"]>>,
+  embeddings: Awaited<ReturnType<typeof embedMany>>["embeddings"]
+}) {
   await vectorStore.upsert({
     indexName: "docs",
-    vectors: embedManyResult.embeddings,
+    vectors: embeddings,
     metadata: chunks.map((chunk, index) => ({
       text: chunk.text,
       id: `${page.webPath}_c_${index}`,
@@ -73,8 +96,6 @@ async function embedDocsPage(page: ReturnType<typeof getContent>[0]) {
       webPath: page.webPath,
     }) satisfies VectorStoreMetadata),
   });
-
-  console.log(`Upserted ${embedManyResult.embeddings.length} embeddings for page ${page.webPath}`);
 }
 
 initVectorStore();

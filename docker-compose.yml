@@ -1,0 +1,10 @@
+services:
+  mcp-for-docs:
+    image: appwrite/mcp-for-docs
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 1234:1234
+    env_file:
+      - .env

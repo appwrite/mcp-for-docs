@@ -13,6 +13,7 @@ export async function downloadDocs() {
   console.log(`Downloading docs from ${owner}/${repo}/${path} to ${downloadDir}`);
   const downloadResult = await downloadTemplate(`gh:${owner}/${repo}/${path}#main`, {
     dir: downloadDir,
+    forceClean: true,
   });
 
   console.log(`Creating table of contents`);
