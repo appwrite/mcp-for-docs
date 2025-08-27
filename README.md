@@ -5,7 +5,38 @@
 # Appwrite Docs MCP Server
 This MCP server is a tool that allows IDEs (Cursor, Windsurf, Claude Code, etc.) to utilize the Appwrite documentation.
 
-## Setting up
+## Usage in your IDE (Cursor, Windsurf, Claude Code, etc.)
+
+### Cursor
+
+Aadd the following to your global Cursor MCP configuration file (`~/.cursor/mcp.json`):
+
+[Click here to add the MCP server to Cursor](cursor://anysphere.cursor-deeplink/mcp/install?name=appwrite-docs-mcp&config=eyJ1cmwiOiJodHRwczovL21jcC1mb3ItZG9jcy5hcHB3cml0ZS5pbyJ9)
+
+Now, enable the MCP server in 
+
+### Claude Code
+
+Run the following command to add the MCP server to Claude Code:
+```bash
+claude mcp add appwrite-docs-mcp http://localhost:1234 -t http
+```
+
+### Windsurf
+
+Add the following to your global Windsurf MCP configuration file (`~/.codeium/windsurf/mcp_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "appwrite-docs-mcp": {
+      "serverUrl": "https://mcp-for-docs.appwrite.io"
+    }
+  }
+}
+```
+
+## Development
 
 Before setting up, make sure you have Bun installed.
 
@@ -73,7 +104,6 @@ Here is a sample configuration file:
 {
   "mcpServers": {
     "appwrite-docs-mcp": {
-      "transport": "http",
       "url": "http://localhost:1234"
     }
   }

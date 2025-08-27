@@ -15,8 +15,6 @@ const server = new MCPServer({
       responseMode: "batch", // Response mode: "batch" or "stream" (default: "batch")
       batchTimeout: 30000, // Timeout for batch responses in ms (default: 30000)
       headers: {
-        // Custom headers for responses
-        "X-Custom-Header": "value",
       },
       cors: {
         // CORS configuration
@@ -28,12 +26,6 @@ const server = new MCPServer({
         maxAge: "86400",
       },
       auth: {},
-      session: {
-        // Session configuration
-        enabled: true, // Enable session management (default: true)
-        headerName: "Mcp-Session-Id", // Session header name (default: "Mcp-Session-Id")
-        allowClientTermination: true, // Allow clients to terminate sessions (default: true)
-      },
     },
   },
 });
