@@ -9,6 +9,7 @@
     "mcp-inspect": "mcp-inspector --transport http --server-url http://localhost:1234",
     "download-content": "bun run scripts/download-content.js",
     "init-vector-store": "bun run scripts/init-vector-store.ts",
+    "init": "bun run download-content && bun run init-vector-store",
     "prepare": "bun run download-content && bun run init-vector-store"
   },
   "keywords": [],
