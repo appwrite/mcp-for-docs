@@ -18,8 +18,14 @@ class SearchDocsTool extends MCPTool<SearchDocsInput> {
   };
 
   async execute(input: SearchDocsInput) {
-    const pages = await queryVectorStore(input.query);
-    return pages;
+    console.log("[SearchDocsTool] Executing with input:", input);
+    try {
+      const pages = await queryVectorStore(input.query);
+      return pages;
+    } catch (error) {
+      console.error("[SearchDocsTool] Error searching docs:", error);
+      return `Could not search docs for query "${input.query}"`;
+    }
   }
 }
 

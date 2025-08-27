@@ -42,7 +42,7 @@
     "llamaindex": "^0.11.27",
     "mcp-framework": "^0.2.15",
     "octokit": "^5.0.3",
-    "zod": "^4.1.1"
+    "zod": "^3"
   },
   "devDependencies": {
     "@modelcontextprotocol/inspector": "^0.16.5",

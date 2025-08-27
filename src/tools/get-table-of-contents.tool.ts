@@ -9,8 +9,14 @@ class GetTableOfContentsTool extends MCPTool<GetTableOfContentsInput> {
   schema = {};
 
   async execute(input: GetTableOfContentsInput) {
-    const toc = await getTableOfContentsFromJson();
-    return toc;
+    console.log("[GetTableOfContentsTool] Executing");
+    try {
+      const toc = await getTableOfContentsFromJson();
+      return toc;
+    } catch (error) {
+      console.error("[GetTableOfContentsTool] Error getting table of contents:", error);
+      return "Could not retrieve table of contents";
+    }
   }
 }
 

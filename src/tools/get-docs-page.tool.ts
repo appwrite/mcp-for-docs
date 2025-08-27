@@ -20,8 +20,14 @@ class GetDocsPageTool extends MCPTool<GetDocsPageInput> {
   };
 
   async execute(input: GetDocsPageInput) {
-    const page = await getDocsFileContent(input.path);
-    return page;
+    console.log("[GetDocsPageTool] Executing with input:", input);
+    try {
+      const page = await getDocsFileContent(input.path);
+      return page;
+    } catch (error) {
+      console.error("[GetDocsPageTool] Error getting docs page:", error);
+      return `Could not retrieve docs page at path "${input.path}"`;
+    }
   }
 }
 
