@@ -2,8 +2,11 @@ import { LibSQLVector } from "@mastra/libsql";
 import path from "path";
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
+export const TMP_DIR = `${path.join(__dirname, "../../", "tmp")}`;
+export const VECTOR_STORE_PATH = `${TMP_DIR}/vector-store.db`;
+
 export const vectorStore = new LibSQLVector({
-  connectionUrl: `file:${path.join(process.cwd(), "tmp", "vector-store.db")}`,
+  connectionUrl: `file:${VECTOR_STORE_PATH}`,
 });
 
 export type VectorStoreMetadata = {

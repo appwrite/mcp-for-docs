@@ -1,13 +1,14 @@
 import { MDocument } from "@mastra/rag"
-import { vectorStore, VectorStoreMetadata } from "../src/lib/vector-store";
+import { TMP_DIR, vectorStore, VectorStoreMetadata } from "../src/lib/vector-store";
 import { getContent } from "../src/lib/utils/content";
 import { embedMany } from "ai";
 import { openai } from "@ai-sdk/openai";
+import fs from "fs/promises";
 
 const BATCH_SIZE = 50;
 
 async function initVectorStore() {
-  // Delete index contents
+  // Delete index content
   try {
     console.log("Deleting index contents...");
     await vectorStore.deleteIndex({

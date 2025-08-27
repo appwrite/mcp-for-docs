@@ -8,8 +8,8 @@
     "start": "node dist/index.js",
     "mcp-inspect": "mcp-inspector --transport http --server-url http://localhost:1234",
     "download-content": "bun run scripts/download-content.js",
-    "init-vector-store": "bun run scripts/init-vector-store.ts",
-    "init": "bun run download-content && bun run init-vector-store",
+    "init-vector-store": "rimraf tmp && mkdir tmp && bun run scripts/init-vector-store.ts",
+    "init": "bun run download-content && bun run init-vector-store"
   },
   "keywords": [],
   "author": "",
@@ -37,6 +37,7 @@
     "@modelcontextprotocol/inspector": "^0.16.5",
     "@types/node": "^24.3.0",
     "mastra": "^0.10.23",
+    "rimraf": "^6.0.1",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2"
   }
