@@ -13,7 +13,7 @@ This MCP server is a tool that allows IDEs (Cursor, Windsurf, Claude Code, etc.)
 
 ### VSCode
 
-<strong><a href="https://tinyurl.com/appwrite-docs-mcp-vscode">Click here to add the Appwrite Docs MCP Server to Cursor</a></strong>
+<strong><a href="https://tinyurl.com/appwrite-docs-mcp-vscode">Click here to add the Appwrite Docs MCP Server to VSCode</a></strong>
 
 ### Claude Code
 
