@@ -26,7 +26,7 @@ There are three processes involved in setting up the MCP server, to ensure we ha
 
 Simply run the following command to initialize the MCP server:
 ```bash
-bun run prepare
+bun run init
 ```
 
 ### Building and running the MCP server
@@ -45,7 +45,7 @@ The server should, by default, be available at `http://localhost:1234`.
 ## Setting up with Docker
 Run the following command to build the Docker image:
 ```bash
-bun run prepare
+bun run init
 docker compose build
 docker compose up
 ```
