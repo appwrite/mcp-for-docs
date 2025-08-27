@@ -9,7 +9,8 @@
     "mcp-inspect": "mcp-inspector --transport http --server-url http://localhost:1234",
     "download-content": "bun run scripts/download-content.js",
     "init-vector-store": "rimraf tmp && mkdir tmp && bun run scripts/init-vector-store.ts",
-    "init": "bun run download-content && bun run init-vector-store"
+    "init": "bun run download-content && bun run init-vector-store",
+    "generate-deeplinks": "bun run scripts/generate-deeplinks.ts"
   },
   "keywords": [],
   "author": "",
