@@ -1,4 +1,4 @@
-const url = "http://localhost:1234"
+const url = "https://mcp-for-docs.appwrite.io"
 
 function generateDeeplinks() {
   const cursor = generateCursorDeeplink()
