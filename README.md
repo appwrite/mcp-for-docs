@@ -1,5 +1,5 @@
-<div style="text-align: center;">
-<img src="assets/banner.png" alt="Appwrite Docs MCP Server" width="200" />
+<div align="center">
+<img src="assets/banner.png" alt="Appwrite Docs MCP Server" width="700" />
 </div>
 
 # Appwrite Docs MCP Server
@@ -43,7 +43,7 @@ bun run mcp-inspect
 
 A web browser tab will open up with the inspector interface.
 
-<div style="text-align: center;">
+<div align="center">
 <img src="assets/inspector.png" alt="MCP Inspector" width="700" />
 </div>
 
