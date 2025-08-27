@@ -1,5 +1,5 @@
 {
-  "name": "appwrite-docs-mcp",
+  "name": "@appwrite.io/mcp-for-docs",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {

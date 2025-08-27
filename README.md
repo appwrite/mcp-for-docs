@@ -22,7 +22,7 @@ Check out the [.env.example](.env.example) file for the environment variables yo
 There are three processes involved in setting up the MCP server, to ensure we have the most up-to-date documentation available.
 
 - **Downloading content:** This script downloads the documentation to `./content` and generates a table of contents JSON file.
-- **Initializing vector store:** This script initializes the vector (PgVector) store with the documentation and relevant metadata.
+- **Initializing vector store:** This script initializes the vector store (using a local LibSQL database) with the documentation and relevant metadata.
 
 Simply run the following command to initialize the MCP server:
 ```bash
