@@ -1,11 +1,10 @@
 import { MDocument } from "@mastra/rag"
-import { TMP_DIR, vectorStore, VectorStoreMetadata } from "../src/lib/vector-store";
+import {  vectorStore, VectorStoreMetadata } from "../src/lib/vector-store";
 import { getContent } from "../src/lib/utils/content";
 import { embedMany } from "ai";
 import { openai } from "@ai-sdk/openai";
-import fs from "fs/promises";
 
-const BATCH_SIZE = 50;
+const BATCH_SIZE = process.env.BATCH_SIZE ? parseInt(process.env.BATCH_SIZE) : 50;
 
 async function initVectorStore() {
   // Delete index content
