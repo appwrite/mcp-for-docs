@@ -11,8 +11,7 @@ This MCP server is a tool that allows IDEs (Cursor, Windsurf, Claude Code, etc.)
 
 Aadd the following to your global Cursor MCP configuration file (`~/.cursor/mcp.json`):
 
-<strong><a href="cursor://anysphere.cursor-deeplink/mcp/install?name=appwrite-docs-mcp&config=eyJ1cmwiOiJodHRwczovL21jcC1mb3ItZG9jcy5hcHB3cml0ZS5pbyJ9">Click here to add the Appwrite Docs MCP Server to Cursor</a></strong>
-Now, enable the MCP server in 
+<strong><a href="https://tinyurl.com/appwrite-docs-mcp">Click here to add the Appwrite Docs MCP Server to Cursor</a></strong>
 
 ### Claude Code
 
