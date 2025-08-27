@@ -19,7 +19,7 @@ This MCP server is a tool that allows IDEs (Cursor, Windsurf, Claude Code, etc.)
 
 Run the following command to add the MCP server to Claude Code:
 ```bash
-claude mcp add appwrite-docs-mcp http://localhost:1234 -t http
+claude mcp add appwrite-docs-mcp https://mcp-for-docs.appwrite.io -t http
 ```
 
 ### Windsurf
