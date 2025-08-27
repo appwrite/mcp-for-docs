@@ -6,6 +6,7 @@
 This MCP server is a tool that allows IDEs (Cursor, Windsurf, Claude Code, etc.) to utilize the Appwrite documentation.
 
 ## Setting up
+
 Before setting up, make sure you have Bun installed.
 
 Then, install the dependencies:
@@ -13,8 +14,9 @@ Then, install the dependencies:
 bun install
 ```
 
-### Environment
-Take a look at the `.env.example` file and create a `.env` file with the correct values.
+Check out the [.env.example](.env.example) file for the environment variables you need to set.
+
+### Running Locally (Without Docker)
 
 ### Initialization
 There are three processes involved in setting up the MCP server, to ensure we have the most up-to-date documentation available.
@@ -27,7 +29,7 @@ Simply run the following command to initialize the MCP server:
 bun run prepare
 ```
 
-### Starting the MCP server
+### Building and running the MCP server
 First, build the server:
 ```bash
 bun run build
@@ -43,12 +45,14 @@ The server should, by default, be available at `http://localhost:1234`.
 ## Setting up with Docker
 Run the following command to build the Docker image:
 ```bash
-bun run init
+bun run prepare
 docker compose build
 docker compose up
 ```
 
-### Inspecting using the official MCP Inspector
+## Usage
+
+### Inspect via the MCP Inspector
 Simply run the following command to inspect the MCP server:
 ```bash
 bun run mcp-inspect
@@ -61,7 +65,7 @@ A web browser tab will open up with the inspector interface.
 </div>
 
 
-## Using the MCP server
+## Use in your IDE (Cursor, Windsurf, Claude Code, etc.)
 Here is a sample configuration file:
 
 ```json

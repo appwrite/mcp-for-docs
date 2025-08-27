@@ -9,3 +9,4 @@ dist
 content
 tmp
 local_cache
+.DS_Store
