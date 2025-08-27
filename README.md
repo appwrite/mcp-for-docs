@@ -8,6 +8,11 @@ This MCP server is a tool that allows IDEs (Cursor, Windsurf, Claude Code, etc.)
 ## Setting up
 Before setting up, make sure you have Bun installed.
 
+Then, install the dependencies:
+```bash
+bun install
+```
+
 ### Environment
 Take a look at the `.env.example` file and create a `.env` file with the correct values.
 
