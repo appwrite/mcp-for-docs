@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "mastra dev",
-    "build": "mastra build",
-    "start": "mastra start",
-    "build-mcp": "tsup scripts/stdio.ts --format esm --no-splitting --dts && chmod +x dist/stdio.js"
+    "build": "tsc && mcp-build",
+    "watch": "tsc --watch",
+    "start": "node dist/index.js",
+    "mcp-inspect": "bunx @modelcontextprotocol/inspector --transport http --server-url http://localhost:1234/mcp",
+    "create-table-of-contents": "bun run scripts/create-table-of-contents.js",
+    "download-content": "bun run scripts/download-content.js",
+    "init-vector-store": "bun run scripts/init-vector-store.ts",
+    "init": "bun run download-content && bun run create-table-of-contents && bun run init-vector-store"
   },
   "keywords": [],
   "author": "",
@@ -31,6 +34,7 @@
     "@modelcontextprotocol/sdk": "^1.17.4",
     "@octokit/rest": "^22.0.0",
     "ai": "^5.0.23",
+    "dotenv": "^17.2.1",
     "fastembed": "^1.14.4",
     "front-matter": "^4.0.2",
     "giget": "^2.0.0",
@@ -41,6 +45,7 @@
     "zod": "^4.1.1"
   },
   "devDependencies": {
+    "@modelcontextprotocol/inspector": "^0.16.5",
     "@types/node": "^24.3.0",
     "mastra": "^0.10.23",
     "tsup": "^8.5.0",

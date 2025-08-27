@@ -1,7 +1,11 @@
 import { embed } from "ai";
 import { openai } from "@ai-sdk/openai";
-import { vectorStore, VectorStoreMetadata } from "../vector-store";
-import { getDocsFileContent } from "./content";
+import { vectorStore, VectorStoreMetadata } from "../vector-store.js";
+import { getDocsFileContent } from "./content.js";
+
+if (!process.env.OPENAI_API_KEY) {
+  throw new Error("OPENAI_API_KEY is not set");
+}
 
 export async function queryVectorStore(query: string) {
   console.log(`Querying vector store with query: ${query}`);
@@ -11,17 +15,17 @@ export async function queryVectorStore(query: string) {
   });
 
   const results = await vectorStore.query({
-    indexName: "docs",
+    indexName: "docs" as any,
     queryVector: queryEmbedding.embedding,
     topK: 3,
-    minScore: 0.5
-  });
+    minScore: 0.5,
+  } as any);
 
   console.log(`Retrieved ${results.length} results`);
 
-  const contents = results.map((result) => {
+  const contents = await Promise.all(results.map(async (result) => {
     const metadata = result.metadata as VectorStoreMetadata;
-    const fullDocPage = getDocsFileContent(metadata.filePath);
+    const fullDocPage = await getDocsFileContent(metadata.webPath);
     const { body } = fullDocPage;
 
     return {
@@ -30,9 +34,8 @@ export async function queryVectorStore(query: string) {
       title: metadata.title,
       description: metadata.description,
       content: body,
-    }
-  });
+    };
+  }));
 
-  console.log(`Contents:`, contents);
   return contents;
 }

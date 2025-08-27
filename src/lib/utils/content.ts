@@ -64,11 +64,10 @@ export function getContent(rootDir: string = docsRoot) {
   return result;
 }
 
-export function getDocsFileContent(filePath: string) {
-  console.log("filePath", filePath);
+export async function getDocsFileContent(filePath: string) {
   const sanitizedFilePath = filePath.startsWith("/") ? filePath : "/" + filePath;
   const relativePath = path.join(contentRoot, sanitizedFilePath);
-  const fileContent = fs.readFileSync(`${relativePath}/+page.markdoc`, "utf8");
+  const fileContent = await fs.promises.readFile(`${relativePath}/+page.markdoc`, "utf8");
   const frontmatter = fm(fileContent);
   const attributes = frontmatter.attributes as PageAttributes;
   const body = frontmatter.body;

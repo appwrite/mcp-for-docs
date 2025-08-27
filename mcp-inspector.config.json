@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "appwrite-docs-mcp": {
+      "transport": "http",
+      "url": "http://localhost:1234/mcp"
+    }
+  }
+}

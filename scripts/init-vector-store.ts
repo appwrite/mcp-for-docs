@@ -1,9 +1,8 @@
-import { PgVector } from "@mastra/pg";
-import { getContent } from "../src/mastra/lib/utils/content";
-import { embed, embedMany } from "ai";
+import { embedMany } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { MDocument } from "@mastra/rag"
-import { vectorStore, VectorStoreMetadata } from "../src/mastra/lib/vector-store";
+import { vectorStore, VectorStoreMetadata } from "../src/lib/vector-store";
+import { getContent } from "../src/lib/utils/content";
 
 async function initVectorStore() {
   // Delete index contents
@@ -22,9 +21,9 @@ async function initVectorStore() {
   // Create index
   console.log("Creating index...");
   await vectorStore.createIndex({
-    indexName: "docs",
+    indexName: "docs" as any,
     dimension: 1536,
-  });
+  } as any);
 
   console.log("Index created");
 

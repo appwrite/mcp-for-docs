@@ -1,5 +1,6 @@
 import { MCPTool } from "mcp-framework";
 import { z } from "zod";
+import { queryVectorStore } from "../lib/utils/query-vector-store.js";
 
 interface SearchDocsInput {
   query: string;
@@ -17,18 +18,8 @@ class SearchDocsTool extends MCPTool<SearchDocsInput> {
   };
 
   async execute(input: SearchDocsInput) {
-    const response = await fetch("http://localhost:1234/tools/search-docs", {
-      method: "POST",
-      body: JSON.stringify({
-        query: input.query,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const data = await response.json();
-    return data;
+    const pages = await queryVectorStore(input.query);
+    return pages;
   }
 }
 
