@@ -9,11 +9,11 @@ This MCP server is a tool that allows IDEs (Cursor, Windsurf, Claude Code, etc.)
 
 ### Cursor
 
-<strong><a href="https://tinyurl.com/appwrite-docs-mcp-cursor-1">Click here to add the Appwrite Docs MCP Server to Cursor</a></strong>
+<strong><a href="https://apwr.dev/docs-mcp-cursor">Click here to add the Appwrite Docs MCP Server to Cursor</a></strong>
 
 ### VSCode
 
-<strong><a href="https://tinyurl.com/appwrite-docs-mcp-vscode-1">Click here to add the Appwrite Docs MCP Server to VSCode</a></strong>
+<strong><a href="https://apwr.dev/docs-mcp-vscode">Click here to add the Appwrite Docs MCP Server to VSCode</a></strong>
 
 ### Claude Code
 
