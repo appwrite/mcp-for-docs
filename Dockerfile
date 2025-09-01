@@ -14,6 +14,9 @@ ADD ./ /app/
 
 RUN bun run build
 
+RUN bun run download-content
+RUN bun run init-vector-store
+
 # Copy raw content
 COPY ./content /app/content
 # Copy vector store .db file
