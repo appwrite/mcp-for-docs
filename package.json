@@ -7,7 +7,7 @@
     "watch": "tsc --watch",
     "start": "node dist/index.js",
     "mcp-inspect": "mcp-inspector --transport http --server-url http://localhost:1234",
-    "download-content": "bun run scripts/download-content.js",
+    "download-content": "rimraf content && bun run scripts/download-content.js",
     "init-vector-store": "rimraf tmp && mkdir tmp && bun run scripts/init-vector-store.ts",
     "init": "bun run download-content && bun run init-vector-store",
     "generate-deeplinks": "bun run scripts/generate-deeplinks.ts"
@@ -28,6 +28,7 @@
     "@mastra/rag": "^1.1.0",
     "@modelcontextprotocol/sdk": "^1.17.4",
     "ai": "^5.0.23",
+    "dedent": "^1.6.0",
     "dotenv": "^17.2.1",
     "front-matter": "^4.0.2",
     "giget": "^2.0.0",
