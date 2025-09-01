@@ -1,10 +1,13 @@
 import { MCPServer } from "mcp-framework";
 import { config } from "dotenv";
 import path from "path";
+import { initLibrariesWithFeatures } from "./lib/utils/process-libraries.js";
 
 config({ path: path.join(process.cwd(), ".env") });
 
 const port = parseInt(process.env.PORT ?? "1234");
+
+await initLibrariesWithFeatures();
 
 const server = new MCPServer({
   transport: {

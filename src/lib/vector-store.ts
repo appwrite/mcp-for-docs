@@ -16,7 +16,8 @@ export type VectorStoreMetadata = {
   title: string;
   description: string;
   createdAt: string;
-  filePath: string;
   webPath: string;
+  content: string;
+  library?: string;
 };
 

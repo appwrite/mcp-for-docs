@@ -3,7 +3,7 @@ import { getDocsFileContent } from "./content.js";
 import { embed } from "ai";
 import { openai } from "@ai-sdk/openai";
 
-const MIN_SCORE = process.env.MIN_SCORE ? parseFloat(process.env.MIN_SCORE) : 0.5;
+const MIN_SCORE = process.env.MIN_SCORE ? parseFloat(process.env.MIN_SCORE) : 0.4;
 
 if (!process.env.OPENAI_API_KEY) {
   throw new Error("OPENAI_API_KEY is not set");
@@ -20,7 +20,7 @@ export async function queryVectorStore(query: string) {
   const results = await vectorStore.query({
     indexName: "docs" as any,
     queryVector: queryEmbedding.embedding,
-    topK: 3,
+    topK: 5,
     minScore: MIN_SCORE,
   } as any);
 
@@ -28,17 +28,23 @@ export async function queryVectorStore(query: string) {
 
   const contents = await Promise.all(results.map(async (result) => {
     const metadata = result.metadata as VectorStoreMetadata;
-    const fullDocPage = await getDocsFileContent(metadata.webPath);
-    const { body } = fullDocPage;
+    // const fullDocPage = await getDocsFileContent(metadata.webPath);
+    // const { body } = fullDocPage;
+    const fullDocPage = metadata.content;
 
     return {
-      path: `/${metadata.filePath}`,
+      path: `${metadata.webPath}`,
       score: parseFloat(result.score.toFixed(3)),
       title: metadata.title,
-      description: metadata.description,
-      content: body,
+      description: metadata.description?? "",
+      content: fullDocPage,
     };
   }));
 
-  return contents;
+  // Remove contents with duplicate paths
+  const uniqueContents = contents.filter((content, index, self) =>
+    index === self.findIndex((t) => t.path === content.path)
+  );
+
+  return uniqueContents;
 }

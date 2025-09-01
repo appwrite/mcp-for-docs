@@ -1,6 +1,7 @@
 import { MCPTool } from "mcp-framework";
 import { z } from "zod";
 import { getDocsFileContent } from "../lib/utils/content.js";
+import dedent from "dedent";
 
 interface GetDocsPageInput {
   path: string;
@@ -8,9 +9,10 @@ interface GetDocsPageInput {
 
 class GetDocsPageTool extends MCPTool<GetDocsPageInput> {
   name = "getDocsPage";
-  description =
-    "Get the content of a page from the Appwrite documentation by path";
-
+  description = dedent`
+  "Get the content of a page from the Appwrite documentation by path";
+    Note, for code examples and technology-specific information, it's best to use listFeatures and getFeatureExamples tools.
+    `;
   schema = {
     path: {
       type: z.string(),

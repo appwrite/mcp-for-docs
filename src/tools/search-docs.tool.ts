@@ -1,6 +1,7 @@
 import { MCPTool } from "mcp-framework";
 import { z } from "zod";
 import { queryVectorStore } from "../lib/utils/query-vector-store.js";
+import dedent from "dedent";
 
 interface SearchDocsInput {
   query: string;
@@ -8,7 +9,10 @@ interface SearchDocsInput {
 
 class SearchDocsTool extends MCPTool<SearchDocsInput> {
   name = "searchDocs";
-  description = "Search the Appwrite documentation";
+  description = dedent`
+    Search the Appwrite documentation.
+    Note, for code examples and technology-specific information, it's best to use listFeatures and getFeatureExamples tools.
+    `;
 
   schema = {
     query: {

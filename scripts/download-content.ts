@@ -1,47 +1,54 @@
-import { downloadTemplate} from "giget";
-import path from 'node:path';
-import { contentRoot, getContent } from "../src/lib/utils/content";
-import fs from "fs";
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
-const downloadDir = path.join(__dirname, '..', 'content', 'docs');
+import { downloadTemplate } from "giget";
+import { createTableOfContents } from "./create-table-of-contents";
+import { appwriteExamplesBranch, docsTargetDir, examplesTargetDir } from "../src/lib/constants";
+import { processLibraries, writeLirbariesExamplesToDisk } from "../src/lib/utils/process-libraries";
 
 export async function downloadDocs() {
   const owner = "appwrite";
   const repo = "website";
-  const path = "src/routes/docs";
+  const repoSubdir = "src/routes/docs";
 
-  console.log(`Downloading docs from ${owner}/${repo}/${path} to ${downloadDir}`);
-  const downloadResult = await downloadTemplate(`gh:${owner}/${repo}/${path}#main`, {
-    dir: downloadDir,
+  console.log(`Downloading docs from ${owner}/${repo}/${repoSubdir} to ${docsTargetDir}`);
+  const downloadResult = await downloadTemplate(`gh:${owner}/${repo}/${repoSubdir}#main`, {
+    dir: docsTargetDir,
     forceClean: true,
   });
 
   console.log(`Creating table of contents`);
-  createTableOfContents();
 
   return {
     docsDir: downloadResult.dir
   }
 }
 
-downloadDocs();
+export async function downloadExamples() {
+  console.log(`Downloading examples from appwrite/appwrite (branch: ${appwriteExamplesBranch})`);
 
-export async function createTableOfContents() {
-  const result = getContent();
+  const owner = "appwrite";
+  const repo = "appwrite";
+  const docsSubdirPath = `docs/examples/${appwriteExamplesBranch}`;
 
-   // Create docs/toc.json
-    const toc = result
-      .sort((a, b) => a.webPath.localeCompare(b.webPath))
-      .map((item) => ({
-        path: `/${item.webPath}`,
-        title: item.attributes.title,
-        description: item.attributes.description,
-      }));
-  
-    console.log("Writing docs/toc.json");
-    //  console.log("Writing docs/toc.json");
-    fs.writeFileSync(
-      path.join(contentRoot, "docs", "toc.json"),
-      JSON.stringify(toc, null, 2)
-    );
- }
+  console.log(`Downloading examples from ${owner}/${repo}/${docsSubdirPath} to ${examplesTargetDir}`);
+  const downloadResult = await downloadTemplate(`gh:${owner}/${repo}/${docsSubdirPath}#${appwriteExamplesBranch}`, {
+    dir: examplesTargetDir,
+    forceClean: true,
+  });
+
+  return {
+    examplesDir: downloadResult.dir
+  }
+}
+
+async function main() {
+
+  await Promise.all([
+    downloadDocs(),
+    downloadExamples(),
+  ]);
+
+  const librariesWithFeatures = await processLibraries();
+  await writeLirbariesExamplesToDisk({ librariesWithFeatures });
+  await createTableOfContents();
+}
+
+await main();
