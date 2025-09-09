@@ -89,7 +89,7 @@ export const libraries: Library[] = [
     examplesPath: "examples",
   },
   {
-    name: "Web - JavaScript",
+    name: "Web - JavaScript (including React, Vue, Svelte, Angular, etc)",
     type: "client",
     root: "client-web",
     examplesPath: "examples",
