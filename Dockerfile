@@ -21,4 +21,4 @@ RUN bun run init-vector-store
 
 EXPOSE 1234
 
-CMD ["node", "dist/index.js"]
+CMD ["bun", "run", "dist/index.js"]
