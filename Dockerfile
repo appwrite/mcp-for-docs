@@ -12,13 +12,14 @@ RUN bun install --frozen-lockfile
 
 ADD ./ /app/
 
-ENV OPENAI_API_KEY=${OPENAI_API_KEY}
+ARG OPENAI_API_KEY
+ENV OPENAI_API_KEY=$OPENAI_API_KEY
 
 RUN bun run build
 
 RUN bun run download-content
-RUN bun run init-vector-store
+RUN OPENAI_API_KEY=$OPENAI_API_KEY bun run init-vector-store
 
 EXPOSE 1234
 
-CMD ["bun", "run", "dist/index.js"]
+CMD ["bun", "run", "start"]

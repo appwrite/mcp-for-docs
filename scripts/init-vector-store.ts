@@ -3,7 +3,10 @@ import { vectorStore, VectorStoreMetadata } from "../src/lib/vector-store";
 import { getContent } from "../src/lib/utils/content";
 import { embedMany } from "ai";
 import { openai } from "@ai-sdk/openai";
-import { librariesWithFeatures } from "../src/lib/utils/process-libraries";
+
+if (!process.env.OPENAI_API_KEY) {
+  throw new Error("OPENAI_API_KEY is not set");
+}
 
 const BATCH_SIZE = process.env.BATCH_SIZE
   ? parseInt(process.env.BATCH_SIZE)
