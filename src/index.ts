@@ -2,12 +2,20 @@ import { MCPServer } from "mcp-framework";
 import { config } from "dotenv";
 import path from "path";
 import { initLibrariesWithFeatures } from "./lib/utils/process-libraries.js";
+import { vectorStore } from "./lib/vector-store.js";
 
 config({ path: path.join(process.cwd(), ".env") });
 
 const port = parseInt(process.env.PORT ?? "1234");
 
 await initLibrariesWithFeatures();
+
+async function inspectVectorStore() {
+  const count = await vectorStore.describeIndex({ indexName: "docs" });
+  console.log("Vector store count:", count);
+}
+
+await inspectVectorStore();
 
 const server = new MCPServer({
   transport: {
