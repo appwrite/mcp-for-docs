@@ -3,7 +3,7 @@ import { getDocsFileContent } from "./content.js";
 import { embed } from "ai";
 import { openai } from "@ai-sdk/openai";
 
-const MIN_SCORE = process.env.MIN_SCORE ? parseFloat(process.env.MIN_SCORE) : 0.4;
+const MIN_SCORE = process.env.MIN_SCORE ? parseFloat(process.env.MIN_SCORE) : 0.25;
 
 if (!process.env.OPENAI_API_KEY) {
   throw new Error("OPENAI_API_KEY is not set");

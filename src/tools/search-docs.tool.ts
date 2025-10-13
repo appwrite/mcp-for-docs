@@ -8,7 +8,7 @@ interface SearchDocsInput {
 }
 
 class SearchDocsTool extends MCPTool<SearchDocsInput> {
-  name = "searchDocs";
+  name = "search";
   description = dedent`
     Search the Appwrite documentation.
     Note, for code examples and technology-specific information, it's best to use listFeatures and getFeatureExamples tools.
