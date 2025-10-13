@@ -23,9 +23,12 @@ const server = new MCPServer({
     options: {
       port, // Port to listen on
       endpoint: "/", // HTTP endpoint path (default: "/mcp")
-      responseMode: "batch", // Response mode: "batch" or "stream" (default: "batch")
+      responseMode: "stream", // Response mode: "batch" or "stream" (default: "batch")
       batchTimeout: 30000, // Timeout for batch responses in ms (default: 30000)
-      headers: {
+      session: {
+        enabled: true,
+        headerName: "Mcp-Session-Id",
+        allowClientTermination: true,
       },
       cors: {
         // CORS configuration
