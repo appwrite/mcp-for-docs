@@ -12,6 +12,8 @@ RUN bun install --frozen-lockfile
 
 ADD ./ /app/
 
+ENV OPENAI_API_KEY=${OPENAI_API_KEY}
+
 RUN bun run build
 
 RUN bun run download-content
