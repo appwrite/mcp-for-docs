@@ -1,12 +1,10 @@
 import { MDocument } from "@mastra/rag";
 import { vectorStore, VectorStoreMetadata } from "../src/lib/vector-store";
 import { getContent } from "../src/lib/utils/content";
-import { embedMany } from "ai";
-import { openai } from "@ai-sdk/openai";
+import { pipeline } from "@xenova/transformers";
 
-if (!process.env.OPENAI_API_KEY) {
-  throw new Error("OPENAI_API_KEY is not set");
-}
+// Local embedding model - no API key needed
+const embeddingPipeline = await pipeline("feature-extraction", "Xenova/all-mpnet-base-v2");
 
 const BATCH_SIZE = process.env.BATCH_SIZE
   ? parseInt(process.env.BATCH_SIZE)
@@ -29,7 +27,7 @@ async function initVectorStore() {
   console.log("Creating index...");
   await vectorStore.createIndex({
     indexName: "docs" as any,
-    dimension: 1536,
+    dimension: 768, // mpnet-base-v2 dimension
   } as any);
 
   console.log("Index created");
@@ -111,12 +109,12 @@ export async function getChunks({ markdown }: { markdown: string }) {
 }
 
 async function embedDocsPage(chunks: Awaited<ReturnType<MDocument["chunk"]>>) {
-  const embeddingsResult = await embedMany({
-    model: openai.embedding("text-embedding-3-small"),
-    values: chunks.map((chunk) => chunk.text),
-    maxRetries: 3,
-  });
-  return embeddingsResult.embeddings;
+  const embeddings: number[][] = [];
+  for (const chunk of chunks) {
+    const output = await embeddingPipeline(chunk.text, { pooling: "mean", normalize: true });
+    embeddings.push(Array.from(output.data));
+  }
+  return embeddings;
 }
 
 async function upsertDocsPageEmbeddings({
@@ -136,7 +134,7 @@ async function upsertDocsPageEmbeddings({
   library?: string;
   content: string;
   chunks: Awaited<ReturnType<MDocument["chunk"]>>;
-  embeddings: Awaited<ReturnType<typeof embedMany>>["embeddings"];
+  embeddings: number[][];
 }) {
   await vectorStore.upsert({
     indexName: "docs",

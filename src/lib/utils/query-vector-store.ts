@@ -1,31 +1,25 @@
 import { vectorStore, VectorStoreMetadata } from "../vector-store.js";
 import { getDocsFileContent } from "./content.js";
-import { embed } from "ai";
-import { openai } from "@ai-sdk/openai";
+import { pipeline } from "@xenova/transformers";
 
 const MIN_SCORE = process.env.MIN_SCORE
   ? parseFloat(process.env.MIN_SCORE)
   : 0.25;
 
-if (!process.env.OPENAI_API_KEY) {
-  throw new Error("OPENAI_API_KEY is not set");
-}
+// Local embedding model - no API key needed
+const embeddingPipeline = await pipeline("feature-extraction", "Xenova/all-mpnet-base-v2");
 
 export async function queryVectorStore(query: string) {
   console.log(`Querying vector store with query: ${query}`);
 
   console.log("Creating embeddings...");
 
-  let queryEmbedding: Awaited<ReturnType<typeof embed>>["embedding"] = [];
+  let queryEmbedding: number[] = [];
   let results: Awaited<ReturnType<typeof vectorStore.query>> = [];
 
   try {
-    const queryEmbeddingResult = await embed({
-      model: openai.embedding("text-embedding-3-small"),
-      value: query,
-      maxRetries: 3,
-    });
-    queryEmbedding = queryEmbeddingResult.embedding;
+    const output = await embeddingPipeline(query, { pooling: "mean", normalize: true });
+    queryEmbedding = Array.from(output.data);
   } catch (error) {
     console.error("Error creating embeddings:", error);
     throw error;
