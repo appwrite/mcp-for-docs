@@ -4,7 +4,7 @@ import { getContent } from "../src/lib/utils/content";
 import { pipeline } from "@xenova/transformers";
 
 // Local embedding model - no API key needed
-const embeddingPipeline = await pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2");
+const embeddingPipeline = await pipeline("feature-extraction", "Xenova/all-mpnet-base-v2");
 
 const BATCH_SIZE = process.env.BATCH_SIZE
   ? parseInt(process.env.BATCH_SIZE)
@@ -27,7 +27,7 @@ async function initVectorStore() {
   console.log("Creating index...");
   await vectorStore.createIndex({
     indexName: "docs" as any,
-    dimension: 384, // MiniLM-L6-v2 dimension
+    dimension: 768, // mpnet-base-v2 dimension
   } as any);
 
   console.log("Index created");

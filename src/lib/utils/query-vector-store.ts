@@ -7,7 +7,7 @@ const MIN_SCORE = process.env.MIN_SCORE
   : 0.25;
 
 // Local embedding model - no API key needed
-const embeddingPipeline = await pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2");
+const embeddingPipeline = await pipeline("feature-extraction", "Xenova/all-mpnet-base-v2");
 
 export async function queryVectorStore(query: string) {
   console.log(`Querying vector store with query: ${query}`);
