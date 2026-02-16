@@ -60,8 +60,8 @@ jobs:
         run: |
           kubectl -n mcp-for-docs create secret docker-registry ghcr \
             --docker-server=ghcr.io \
-            --docker-username=${{ secrets.GHCR_USERNAME }} \
-            --docker-password=${{ secrets.GHCR_TOKEN }} \
+            --docker-username="${{ secrets.GHCR_USERNAME }}" \
+            --docker-password="${{ secrets.GHCR_TOKEN }}" \
             --docker-email=ci@appwrite.io \
             --dry-run=client -o yaml | kubectl apply -f -
 
