@@ -1,4 +1,4 @@
-apiVersion: gateway.networking.k8s.io/v1beta1
+apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
     name: mcp-for-docs
@@ -8,14 +8,14 @@ spec:
         {{- $domains := required "domain must be set" .Values.domain }}
         {{- range $idx, $hostname := $domains }}
         - name: {{ printf "http-%d" $idx }}
-          port: 80
+          port: 8000
           protocol: HTTP
           hostname: {{ $hostname | quote }}
           allowedRoutes:
               namespaces:
                   from: Same
         - name: {{ printf "https-%d" $idx }}
-          port: 443
+          port: 8443
           protocol: HTTPS
           hostname: {{ $hostname | quote }}
           allowedRoutes:
@@ -47,7 +47,7 @@ spec:
 
 ---
 
-apiVersion: gateway.networking.k8s.io/v1beta1
+apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: mcp-for-docs
