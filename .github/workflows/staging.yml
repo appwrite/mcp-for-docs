@@ -2,9 +2,6 @@ name: Staging deployment
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 env:
   TAG: ${{ github.sha }}
@@ -61,15 +58,15 @@ jobs:
         run: |
           kubectl -n mcp-for-docs create secret docker-registry ghcr \
             --docker-server=ghcr.io \
-            --docker-username=${{ secrets.GHCR_USERNAME }} \
-            --docker-password=${{ secrets.GHCR_TOKEN }} \
+            --docker-username="${{ secrets.GHCR_USERNAME }}" \
+            --docker-password="${{ secrets.GHCR_TOKEN }}" \
             --docker-email=ci@appwrite.io \
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Create application secrets
         run: |
           kubectl -n mcp-for-docs create secret generic mcp-for-docs \
-            --from-literal=openai-api-key=${{ secrets.OPENAI_API_KEY }} \
+            --from-literal=openai-api-key="${{ secrets.OPENAI_API_KEY }}" \
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Deploy
