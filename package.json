@@ -1,6 +1,6 @@
 {
   "name": "@appwrite.io/mcp-for-docs",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "main": "index.js",
   "scripts": {
     "build": "tsc && mcp-build",
