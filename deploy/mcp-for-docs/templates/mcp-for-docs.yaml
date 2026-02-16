@@ -46,27 +46,21 @@ spec:
           ports:
             - containerPort: 1234
           startupProbe:
-            httpGet:
-              path: /
+            tcpSocket:
               port: 1234
-              scheme: HTTP
             periodSeconds: 5
             timeoutSeconds: 3
             failureThreshold: 12
           livenessProbe:
-            httpGet:
-              path: /
+            tcpSocket:
               port: 1234
-              scheme: HTTP
             periodSeconds: 10
             timeoutSeconds: 3
             failureThreshold: 3
             successThreshold: 1
           readinessProbe:
-            httpGet:
-              path: /
+            tcpSocket:
               port: 1234
-              scheme: HTTP
             periodSeconds: 5
             timeoutSeconds: 3
             failureThreshold: 3

@@ -86,6 +86,10 @@ export async function processPage({
   library?: string;
 }) {
   const chunks = await getChunks({ markdown });
+  if (chunks.length === 0) {
+    console.log(`Skipping ${webPath}: no chunks generated`);
+    return { chunks, embeddings: [] };
+  }
   const embeddings = await embedDocsPage(chunks);
   await upsertDocsPageEmbeddings({
     webPath,
