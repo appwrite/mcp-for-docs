@@ -25,6 +25,7 @@ const server = new MCPServer({
         enabled: true,
         headerName: "Mcp-Session-Id",
         allowClientTermination: true,
+        sessionTimeout: 300000, // 5 minutes
       },
       cors: {
         // CORS configuration
