@@ -1,0 +1,102 @@
+diff --git a/node_modules/mcp-framework/dist/transports/http/server.js b/node_modules/mcp-framework/dist/transports/http/server.js
+index b535515..ad7f146 100644
+--- a/node_modules/mcp-framework/dist/transports/http/server.js
++++ b/node_modules/mcp-framework/dist/transports/http/server.js
+@@ -17,6 +17,8 @@ export class HttpStreamTransport extends AbstractTransport {
+     _config;
+     _oauthMetadata;
+     _transports = {};
++    _sessionLastActivity = {};
++    _cleanupInterval;
+     constructor(config = {}) {
+         super();
+         this._config = config;
+@@ -90,6 +92,23 @@ export class HttpStreamTransport extends AbstractTransport {
+             this._server.listen(this._port, () => {
+                 logger.info(`HTTP server listening on port ${this._port}, endpoint ${this._endpoint}`);
+                 this._isRunning = true;
++                // Start periodic session cleanup
++                const timeoutMs = this._config.session?.sessionTimeout || 300000;
++                this._cleanupInterval = setInterval(() => {
++                    const now = Date.now();
++                    for (const [sid, lastActivity] of Object.entries(this._sessionLastActivity)) {
++                        if (now - lastActivity > timeoutMs) {
++                            logger.info(`Session ${sid} timed out after ${Math.round((now - lastActivity) / 1000)}s of inactivity — cleaning up`);
++                            const t = this._transports[sid];
++                            if (t) {
++                                try { t.close(); } catch (_) {}
++                            }
++                            delete this._transports[sid];
++                            delete this._sessionLastActivity[sid];
++                        }
++                    }
++                }, 60000);
++                this._cleanupInterval.unref();
+                 resolve();
+             });
+         });
+@@ -117,6 +136,7 @@ export class HttpStreamTransport extends AbstractTransport {
+         if (sessionId && this._transports[sessionId]) {
+             // Existing session
+             transport = this._transports[sessionId];
++            this._sessionLastActivity[sessionId] = Date.now();
+             logger.debug(`Reusing existing session: ${sessionId}`);
+         }
+         else if (isInitialize || isReInitialize) {
+@@ -131,6 +151,7 @@ export class HttpStreamTransport extends AbstractTransport {
+                 onsessioninitialized: (sessionId) => {
+                     logger.info(`Session initialized: ${sessionId}`);
+                     this._transports[sessionId] = transport;
++                    this._sessionLastActivity[sessionId] = Date.now();
+                 },
+                 enableJsonResponse: this._enableJsonResponse,
+             });
+@@ -138,6 +159,7 @@ export class HttpStreamTransport extends AbstractTransport {
+                 if (transport.sessionId) {
+                     logger.info(`Transport closed for session: ${transport.sessionId}`);
+                     delete this._transports[transport.sessionId];
++                    delete this._sessionLastActivity[transport.sessionId];
+                 }
+             };
+             transport.onerror = (error) => {
+@@ -231,16 +253,22 @@ export class HttpStreamTransport extends AbstractTransport {
+                 await transport.send(message);
+             }
+             catch (error) {
+-                logger.error(`Error sending message to session ${sessionId}: ${error}`);
++                logger.debug(`Send failed for session ${sessionId}: ${error}`);
+                 failedSessions.push(sessionId);
+             }
+         }
+         if (failedSessions.length > 0) {
+-            // Log but don't remove sessions on transient send failures.
+-            // The SDK throws when no SSE stream is currently open for a request ID,
+-            // which is a normal condition (e.g. client momentarily between requests).
+-            // The session itself remains valid for future requests.
+-            logger.warn(`Failed to broadcast to ${failedSessions.length} session(s) — sessions preserved for future requests.`);
++            // Remove dead sessions that failed to send — these have no active
++            // connection and will never recover without a new initialize request.
++            for (const sid of failedSessions) {
++                const t = this._transports[sid];
++                if (t) {
++                    try { t.close(); } catch (_) {}
++                }
++                delete this._transports[sid];
++                delete this._sessionLastActivity[sid];
++            }
++            logger.info(`Cleaned up ${failedSessions.length} dead session(s) after broadcast failure`);
+         }
+     }
+     async close() {
+@@ -256,6 +284,11 @@ export class HttpStreamTransport extends AbstractTransport {
+             }
+         }
+         this._transports = {};
++        this._sessionLastActivity = {};
++        if (this._cleanupInterval) {
++            clearInterval(this._cleanupInterval);
++            this._cleanupInterval = undefined;
++        }
+         if (this._server) {
+             this._server.close();
+             this._server = undefined;
