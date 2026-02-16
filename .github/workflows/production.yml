@@ -1,0 +1,79 @@
+name: Production deployment
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+env:
+  TAG: ${{ github.event.release.tag_name || github.sha }}
+  REPOSITORY: mcp-for-docs
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/appwrite/mcp-for-docs:${{ env.TAG }}
+          build-args: |
+            "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}"
+
+  deploy_kubernetes:
+    strategy:
+      matrix:
+        region: [{ full: fra1, short: fra }]
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v4
+      - name: Install Kubectl
+        uses: azure/setup-kubectl@v4
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - name: Save DigitalOcean kubeconfig with short-lived credentials
+        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 assets-${{ matrix.region.full }}-prod
+
+      - name: Ensure namespaces exist
+        run: |
+          kubectl create namespace mcp-for-docs --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create docker pull secret
+        run: |
+          kubectl -n mcp-for-docs create secret docker-registry ghcr \
+            --docker-server=ghcr.io \
+            --docker-username=${{ secrets.GHCR_USERNAME }} \
+            --docker-password=${{ secrets.GHCR_TOKEN }} \
+            --docker-email=ci@appwrite.io \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create application secrets
+        run: |
+          kubectl -n mcp-for-docs create secret generic mcp-for-docs \
+            --from-literal=openai-api-key=${{ secrets.OPENAI_API_KEY }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy
+        run: |
+          helm upgrade --install --namespace mcp-for-docs mcp-for-docs deploy/mcp-for-docs/ \
+            --values deploy/mcp-for-docs/environments/production/${{ matrix.region.full }}.values.yaml \
+            --set imagePullSecret='ghcr' \
+            --set version=${{ env.TAG }}
