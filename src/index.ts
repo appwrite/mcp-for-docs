@@ -35,7 +35,6 @@ const server = new MCPServer({
         exposeHeaders: "Content-Type, Authorization, x-api-key, Mcp-Session-Id",
         maxAge: "86400",
       },
-      auth: {},
     },
   },
 });
