@@ -12,13 +12,12 @@ RUN bun install --frozen-lockfile
 
 ADD ./ /app/
 
-ARG OPENAI_API_KEY
-ENV OPENAI_API_KEY=$OPENAI_API_KEY
-
 RUN bun run build
 
 RUN bun run download-content
-RUN OPENAI_API_KEY=$OPENAI_API_KEY bun run init-vector-store
+RUN --mount=type=secret,id=OPENAI_API_KEY \
+    OPENAI_API_KEY=$(cat /run/secrets/OPENAI_API_KEY) \
+    bun run init-vector-store
 
 EXPOSE 1234
 

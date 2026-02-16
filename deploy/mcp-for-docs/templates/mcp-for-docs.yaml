@@ -3,7 +3,9 @@ kind: Deployment
 metadata:
   name: mcp-for-docs
 spec:
+  {{- if not (lookup "apps/v1" "Deployment" .Release.Namespace "mcp-for-docs") }}
   replicas: {{ .Values.minReplicas | int }}
+  {{- end }}
   strategy:
       type: RollingUpdate
       rollingUpdate:
@@ -19,7 +21,7 @@ spec:
     spec:
       {{- with .Values.nodeSelector }}
       nodeSelector:
-        {{ toYaml . }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.imagePullSecret }}
       imagePullSecrets:

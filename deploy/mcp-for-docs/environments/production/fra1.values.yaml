@@ -1,5 +1,5 @@
 domain:
-  - mcp-docs.appwrite.io
+  - mcp-for-docs.appwrite.io
 
 minReplicas: 2
 maxReplicas: 20

@@ -29,8 +29,8 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/appwrite/mcp-for-docs:${{ env.TAG }}
-          build-args: |
-            "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}"
+          secrets: |
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
 
   deploy_kubernetes:
     strategy:
