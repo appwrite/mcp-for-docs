@@ -10,7 +10,8 @@
     "download-content": "rimraf content && bun run scripts/download-content.js",
     "init-vector-store": "rimraf tmp && mkdir tmp && bun run scripts/init-vector-store.ts",
     "init": "bun run download-content && bun run init-vector-store",
-    "generate-deeplinks": "bun run scripts/generate-deeplinks.ts"
+    "generate-deeplinks": "bun run scripts/generate-deeplinks.ts",
+    "postinstall": "patch-package"
   },
   "keywords": [],
   "author": "",
@@ -38,6 +39,7 @@
     "@modelcontextprotocol/inspector": "^0.16.8",
     "@types/node": "^24.10.13",
     "mastra": "^0.10.23",
+    "patch-package": "^8.0.1",
     "rimraf": "^6.1.2",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3"
