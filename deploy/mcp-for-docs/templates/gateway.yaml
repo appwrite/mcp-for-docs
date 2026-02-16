@@ -8,14 +8,14 @@ spec:
         {{- $domains := required "domain must be set" .Values.domain }}
         {{- range $idx, $hostname := $domains }}
         - name: {{ printf "http-%d" $idx }}
-          port: 8000
+          port: 80
           protocol: HTTP
           hostname: {{ $hostname | quote }}
           allowedRoutes:
               namespaces:
                   from: Same
         - name: {{ printf "https-%d" $idx }}
-          port: 8443
+          port: 443
           protocol: HTTPS
           hostname: {{ $hostname | quote }}
           allowedRoutes:
