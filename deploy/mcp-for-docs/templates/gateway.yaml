@@ -1,0 +1,65 @@
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: Gateway
+metadata:
+    name: mcp-for-docs
+spec:
+    gatewayClassName: traefik
+    listeners:
+        {{- $domains := required "domain must be set" .Values.domain }}
+        {{- range $idx, $hostname := $domains }}
+        - name: {{ printf "http-%d" $idx }}
+          port: 8000
+          protocol: HTTP
+          hostname: {{ $hostname | quote }}
+          allowedRoutes:
+              namespaces:
+                  from: Same
+        - name: {{ printf "https-%d" $idx }}
+          port: 8443
+          protocol: HTTPS
+          hostname: {{ $hostname | quote }}
+          allowedRoutes:
+              namespaces:
+                  from: Same
+          tls:
+              mode: Terminate
+              certificateRefs:
+                  - name: gateway
+                    namespace: traefik
+        {{- end }}
+
+---
+
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: mcp-for-docs-tls
+  namespace: traefik
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      namespace: {{ .Release.Namespace }}
+  to:
+    - group: ""
+      kind: Secret
+      name: gateway
+
+---
+
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: mcp-for-docs
+spec:
+  {{- $domains := required "domain must be set" .Values.domain }}
+  hostnames:
+    {{- range $domains }}
+    - {{ . | quote }}
+    {{- end }}
+  parentRefs:
+    - name: mcp-for-docs
+  rules:
+    - backendRefs:
+        - name: mcp-for-docs
+          port: 80

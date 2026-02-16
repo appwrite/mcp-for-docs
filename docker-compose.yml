@@ -4,9 +4,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        OPENAI_API_KEY: ${OPENAI_API_KEY}
+      secrets:
+        - OPENAI_API_KEY
     ports:
       - 1234:1234
     env_file:
       - .env
+
+secrets:
+  OPENAI_API_KEY:
+    environment: OPENAI_API_KEY

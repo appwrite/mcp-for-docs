@@ -6,7 +6,8 @@ export const TMP_DIR = `${path.join(__dirname, "../../", "tmp")}`;
 export const VECTOR_STORE_PATH = `${TMP_DIR}/vector-store.db`;
 
 export const vectorStore = new LibSQLVector({
-  connectionUrl: `file:${VECTOR_STORE_PATH}`,
+  url: `file:${VECTOR_STORE_PATH}`,
+  id: "vector-store",
 });
 
 export type VectorStoreMetadata = {
