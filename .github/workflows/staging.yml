@@ -69,7 +69,7 @@ jobs:
       - name: Create application secrets
         run: |
           kubectl -n mcp-for-docs create secret generic mcp-for-docs \
-            --from-literal=openai-api-key=${{ secrets.OPENAI_API_KEY }} \
+            --from-literal=openai-api-key="${{ secrets.OPENAI_API_KEY }}" \
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Deploy
