@@ -7,8 +7,10 @@ WORKDIR /app
 
 ADD ./package.json /app/package.json
 ADD ./bun.lock /app/bun.lock
+ADD ./patches /app/patches
 
 RUN bun install --frozen-lockfile
+RUN npx patch-package
 
 ADD ./ /app/
 
