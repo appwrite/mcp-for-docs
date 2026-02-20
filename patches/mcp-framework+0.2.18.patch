@@ -59,7 +59,7 @@ index b535515..ad7f146 100644
                  }
              };
              transport.onerror = (error) => {
-@@ -231,16 +253,22 @@ export class HttpStreamTransport extends AbstractTransport {
+@@ -231,16 +253,16 @@ export class HttpStreamTransport extends AbstractTransport {
                  await transport.send(message);
              }
              catch (error) {
@@ -74,17 +74,11 @@ index b535515..ad7f146 100644
 -            // which is a normal condition (e.g. client momentarily between requests).
 -            // The session itself remains valid for future requests.
 -            logger.warn(`Failed to broadcast to ${failedSessions.length} session(s) — sessions preserved for future requests.`);
-+            // Remove dead sessions that failed to send — these have no active
-+            // connection and will never recover without a new initialize request.
-+            for (const sid of failedSessions) {
-+                const t = this._transports[sid];
-+                if (t) {
-+                    try { t.close(); } catch (_) {}
-+                }
-+                delete this._transports[sid];
-+                delete this._sessionLastActivity[sid];
-+            }
-+            logger.info(`Cleaned up ${failedSessions.length} dead session(s) after broadcast failure`);
++            // Log but do not remove sessions on transient send failures.
++            // The SDK can throw when no SSE stream is currently open for a request ID,
++            // which is normal while clients reconnect between requests.
++            // Keep sessions alive and let timeout-based cleanup handle stale ones.
++            logger.debug(`Failed to broadcast to ${failedSessions.length} session(s); sessions preserved for future requests.`);
          }
      }
      async close() {
