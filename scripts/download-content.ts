@@ -22,7 +22,7 @@ export async function downloadDocs() {
 }
 
 export async function downloadExamples() {
-  console.log(`Downloading examples from appwrite/appwrite (branch: ${appwriteExamplesBranch})`);
+  console.log(`Downloading examples from appwrite/appwrite (version: ${appwriteExamplesBranch})`);
 
   const owner = "appwrite";
   const repo = "appwrite";
