@@ -27,9 +27,12 @@ export async function downloadExamples() {
   const owner = "appwrite";
   const repo = "appwrite";
   const docsSubdirPath = `docs/examples/${appwriteExamplesBranch}`;
+  // The version-pinned example folders (docs/examples/<version>) only live on the
+  // `main` branch; they were removed from the per-version branches like 1.8.x.
+  const ref = "main";
 
   console.log(`Downloading examples from ${owner}/${repo}/${docsSubdirPath} to ${examplesTargetDir}`);
-  const downloadResult = await downloadTemplate(`gh:${owner}/${repo}/${docsSubdirPath}#${appwriteExamplesBranch}`, {
+  const downloadResult = await downloadTemplate(`gh:${owner}/${repo}/${docsSubdirPath}#${ref}`, {
     dir: examplesTargetDir,
     forceClean: true,
   });
