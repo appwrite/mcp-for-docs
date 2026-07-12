@@ -78,6 +78,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "chore(${{ env.ENVIRONMENT }}): ${{ env.PROJECT }} image tag to ${{ env.TAG }}"
+            git commit -m "chore(${ENVIRONMENT}): ${PROJECT} image tag to ${TAG}"
             git push
           fi
