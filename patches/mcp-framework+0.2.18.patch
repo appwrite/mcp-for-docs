@@ -1,7 +1,7 @@
 diff --git a/node_modules/mcp-framework/dist/transports/http/server.js b/node_modules/mcp-framework/dist/transports/http/server.js
 --- a/node_modules/mcp-framework/dist/transports/http/server.js
 +++ b/node_modules/mcp-framework/dist/transports/http/server.js
-@@ -17,6 +17,8 @@ export class HttpStreamTransport extends AbstractTransport {
+@@ -17,10 +17,12 @@ export class HttpStreamTransport extends AbstractTransport {
      _config;
      _oauthMetadata;
      _transports = {};
@@ -10,9 +10,17 @@ diff --git a/node_modules/mcp-framework/dist/transports/http/server.js b/node_mo
      constructor(config = {}) {
          super();
          this._config = config;
-@@ -90,6 +92,23 @@ export class HttpStreamTransport extends AbstractTransport {
+-        this._port = config.port || 8080;
++        this._port = config.port ?? 8080;
+         this._endpoint = config.endpoint || '/mcp';
+         this._enableJsonResponse = config.responseMode === 'batch';
+         // Initialize OAuth metadata if OAuth provider is configured
+@@ -88,12 +90,33 @@ export class HttpStreamTransport extends AbstractTransport {
+                 this._onclose?.();
+             });
              this._server.listen(this._port, () => {
-                 logger.info(`HTTP server listening on port ${this._port}, endpoint ${this._endpoint}`);
+-                logger.info(`HTTP server listening on port ${this._port}, endpoint ${this._endpoint}`);
++                logger.info(`HTTP server listening on port ${this.port}, endpoint ${this._endpoint}`);
                  this._isRunning = true;
 +                // Start periodic session cleanup
 +                const timeoutMs = this._config.session?.sessionTimeout || 300000;
@@ -34,7 +42,15 @@ diff --git a/node_modules/mcp-framework/dist/transports/http/server.js b/node_mo
                  resolve();
              });
          });
-@@ -109,6 +128,10 @@ export class HttpStreamTransport extends AbstractTransport {
+     }
++    get port() {
++        const address = this._server?.address();
++        return address && typeof address === 'object' ? address.port : this._port;
++    }
+     async handleMcpRequest(req, res) {
+         const sessionId = req.headers['mcp-session-id'];
+         let transport;
+@@ -109,6 +132,10 @@ export class HttpStreamTransport extends AbstractTransport {
                  return;
              authData = authResult.data || {};
          }
@@ -45,7 +61,7 @@ diff --git a/node_modules/mcp-framework/dist/transports/http/server.js b/node_mo
          // Allow re-initialization even when a stale session ID is provided.
          // Clients like Cline may keep sending the old session ID header after
          // a session is lost (server restart, transport error, etc.).
-@@ -117,6 +140,7 @@ export class HttpStreamTransport extends AbstractTransport {
+@@ -117,6 +144,7 @@ export class HttpStreamTransport extends AbstractTransport {
          if (sessionId && this._transports[sessionId]) {
              // Existing session
              transport = this._transports[sessionId];
@@ -53,7 +69,7 @@ diff --git a/node_modules/mcp-framework/dist/transports/http/server.js b/node_mo
              logger.debug(`Reusing existing session: ${sessionId}`);
          }
          else if (isInitialize || isReInitialize) {
-@@ -131,6 +155,7 @@ export class HttpStreamTransport extends AbstractTransport {
+@@ -131,6 +159,7 @@ export class HttpStreamTransport extends AbstractTransport {
                  onsessioninitialized: (sessionId) => {
                      logger.info(`Session initialized: ${sessionId}`);
                      this._transports[sessionId] = transport;
@@ -61,7 +77,7 @@ diff --git a/node_modules/mcp-framework/dist/transports/http/server.js b/node_mo
                  },
                  enableJsonResponse: this._enableJsonResponse,
              });
-@@ -138,6 +163,7 @@ export class HttpStreamTransport extends AbstractTransport {
+@@ -138,6 +167,7 @@ export class HttpStreamTransport extends AbstractTransport {
                  if (transport.sessionId) {
                      logger.info(`Transport closed for session: ${transport.sessionId}`);
                      delete this._transports[transport.sessionId];
@@ -69,7 +85,7 @@ diff --git a/node_modules/mcp-framework/dist/transports/http/server.js b/node_mo
                  }
              };
              transport.onerror = (error) => {
-@@ -172,6 +198,23 @@ export class HttpStreamTransport extends AbstractTransport {
+@@ -172,6 +202,23 @@ export class HttpStreamTransport extends AbstractTransport {
              await transport.handleRequest(req, res, body);
          });
      }
@@ -93,7 +109,7 @@ diff --git a/node_modules/mcp-framework/dist/transports/http/server.js b/node_mo
      async readRequestBody(req) {
          return new Promise((resolve, reject) => {
              let body = '';
-@@ -214,11 +257,20 @@ export class HttpStreamTransport extends AbstractTransport {
+@@ -214,11 +261,20 @@ export class HttpStreamTransport extends AbstractTransport {
              id: null,
          }));
      }
@@ -115,7 +131,7 @@ diff --git a/node_modules/mcp-framework/dist/transports/http/server.js b/node_mo
          const activeSessions = Object.entries(this._transports);
          if (activeSessions.length === 0) {
              logger.warn('No active sessions to send message to');
-@@ -228,19 +280,19 @@ export class HttpStreamTransport extends AbstractTransport {
+@@ -228,19 +284,19 @@ export class HttpStreamTransport extends AbstractTransport {
          const failedSessions = [];
          for (const [sessionId, transport] of activeSessions) {
              try {
@@ -142,7 +158,7 @@ diff --git a/node_modules/mcp-framework/dist/transports/http/server.js b/node_mo
          }
      }
      async close() {
-@@ -256,6 +308,11 @@ export class HttpStreamTransport extends AbstractTransport {
+@@ -256,6 +312,11 @@ export class HttpStreamTransport extends AbstractTransport {
              }
          }
          this._transports = {};
@@ -154,3 +170,14 @@ diff --git a/node_modules/mcp-framework/dist/transports/http/server.js b/node_mo
          if (this._server) {
              this._server.close();
              this._server = undefined;
+diff --git a/node_modules/mcp-framework/dist/transports/http/server.d.ts b/node_modules/mcp-framework/dist/transports/http/server.d.ts
+--- a/node_modules/mcp-framework/dist/transports/http/server.d.ts
++++ b/node_modules/mcp-framework/dist/transports/http/server.d.ts
+@@ -13,6 +13,7 @@ export declare class HttpStreamTransport extends AbstractTransport {
+     private _transports;
+     constructor(config?: HttpStreamTransportConfig);
+     start(): Promise<void>;
++    get port(): number;
+     private handleMcpRequest;
+     private readRequestBody;
+     private setCorsHeaders;

@@ -33,7 +33,7 @@ const server = new MCPServer({
         allowMethods: "GET, POST, DELETE, OPTIONS",
         allowHeaders:
           "Content-Type, Accept, Authorization, x-api-key, Mcp-Session-Id, Last-Event-ID",
-        exposeHeaders: "Content-Type, Authorization, x-api-key, Mcp-Session-Id",
+        exposeHeaders: "Content-Type, Authorization, x-api-key",
         maxAge: "86400",
       },
     },

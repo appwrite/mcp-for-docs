@@ -1,5 +1,4 @@
 import assert from "node:assert/strict";
-import { createServer } from "node:net";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
@@ -7,31 +6,16 @@ import { HttpStreamTransport, MCPServer } from "mcp-framework";
 
 const fixturesPath = fileURLToPath(new URL("./fixtures", import.meta.url));
 
-async function availablePort() {
-  const server = createServer();
-  await new Promise((resolve, reject) => {
-    server.once("error", reject);
-    server.listen(0, "127.0.0.1", resolve);
-  });
-  const address = server.address();
-  assert(address && typeof address === "object");
-  await new Promise((resolve, reject) => {
-    server.close((error) => (error ? reject(error) : resolve()));
-  });
-  return address.port;
-}
-
 async function createTransport(onRequest) {
-  const port = await availablePort();
   const transport = new HttpStreamTransport({
-    port,
+    port: 0,
     endpoint: "/",
     responseMode: "stream",
     session: { enabled: false },
   });
   transport.onmessage = (message) => onRequest(transport, message);
   await transport.start();
-  return { port, transport };
+  return { port: transport.port, transport };
 }
 
 async function post(port, body, headers = {}) {
@@ -55,7 +39,6 @@ function parseSse(responseBody) {
 }
 
 async function createMcpServer(name) {
-  const port = await availablePort();
   const server = new MCPServer({
     name,
     version: "1.0.0",
@@ -63,7 +46,7 @@ async function createMcpServer(name) {
     transport: {
       type: "http-stream",
       options: {
-        port,
+        port: 0,
         endpoint: "/",
         responseMode: "stream",
         session: { enabled: false },
@@ -73,6 +56,11 @@ async function createMcpServer(name) {
   const running = server.start();
 
   for (let attempt = 0; attempt < 50; attempt += 1) {
+    const port = server.transport?.port;
+    if (!port) {
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      continue;
+    }
     try {
       const response = await fetch(`http://127.0.0.1:${port}/`, {
         method: "OPTIONS",
