@@ -1,5 +1,4 @@
 diff --git a/node_modules/mcp-framework/dist/transports/http/server.js b/node_modules/mcp-framework/dist/transports/http/server.js
-index b535515..ad7f146 100644
 --- a/node_modules/mcp-framework/dist/transports/http/server.js
 +++ b/node_modules/mcp-framework/dist/transports/http/server.js
 @@ -17,6 +17,8 @@ export class HttpStreamTransport extends AbstractTransport {
@@ -35,7 +34,18 @@ index b535515..ad7f146 100644
                  resolve();
              });
          });
-@@ -117,6 +136,7 @@ export class HttpStreamTransport extends AbstractTransport {
+@@ -109,6 +128,10 @@ export class HttpStreamTransport extends AbstractTransport {
+                 return;
+             authData = authResult.data || {};
+         }
++        if (this._config.session?.enabled === false) {
++            await this.handleStatelessRequest(req, res, body, authData);
++            return;
++        }
+         // Allow re-initialization even when a stale session ID is provided.
+         // Clients like Cline may keep sending the old session ID header after
+         // a session is lost (server restart, transport error, etc.).
+@@ -117,6 +140,7 @@ export class HttpStreamTransport extends AbstractTransport {
          if (sessionId && this._transports[sessionId]) {
              // Existing session
              transport = this._transports[sessionId];
@@ -43,7 +53,7 @@ index b535515..ad7f146 100644
              logger.debug(`Reusing existing session: ${sessionId}`);
          }
          else if (isInitialize || isReInitialize) {
-@@ -131,6 +151,7 @@ export class HttpStreamTransport extends AbstractTransport {
+@@ -131,6 +155,7 @@ export class HttpStreamTransport extends AbstractTransport {
                  onsessioninitialized: (sessionId) => {
                      logger.info(`Session initialized: ${sessionId}`);
                      this._transports[sessionId] = transport;
@@ -51,7 +61,7 @@ index b535515..ad7f146 100644
                  },
                  enableJsonResponse: this._enableJsonResponse,
              });
-@@ -138,6 +159,7 @@ export class HttpStreamTransport extends AbstractTransport {
+@@ -138,6 +163,7 @@ export class HttpStreamTransport extends AbstractTransport {
                  if (transport.sessionId) {
                      logger.info(`Transport closed for session: ${transport.sessionId}`);
                      delete this._transports[transport.sessionId];
@@ -59,8 +69,58 @@ index b535515..ad7f146 100644
                  }
              };
              transport.onerror = (error) => {
-@@ -231,16 +253,16 @@ export class HttpStreamTransport extends AbstractTransport {
-                 await transport.send(message);
+@@ -172,6 +198,23 @@ export class HttpStreamTransport extends AbstractTransport {
+             await transport.handleRequest(req, res, body);
+         });
+     }
++    async handleStatelessRequest(req, res, body, authData) {
++        const transport = new StreamableHTTPServerTransport({
++            sessionIdGenerator: undefined,
++            enableJsonResponse: this._enableJsonResponse,
++        });
++        transport.onerror = (error) => {
++            logger.error(`Stateless transport error: ${error}`);
++        };
++        transport.onmessage = async (message) => {
++            if (this._onmessage) {
++                await this._onmessage(message);
++            }
++        };
++        await requestContext.run({ ...authData, httpTransport: transport }, async () => {
++            await transport.handleRequest(req, res, body);
++        });
++    }
+     async readRequestBody(req) {
+         return new Promise((resolve, reject) => {
+             let body = '';
+@@ -214,11 +257,20 @@ export class HttpStreamTransport extends AbstractTransport {
+             id: null,
+         }));
+     }
+-    async send(message) {
++    async send(message, options) {
+         if (!this._isRunning) {
+             logger.warn('Attempted to send message, but HTTP transport is not running');
+             return;
+         }
++        if (this._config.session?.enabled === false) {
++            const transport = requestContext.getStore()?.httpTransport;
++            if (!transport) {
++                logger.warn('No active stateless request to send message to');
++                return;
++            }
++            await transport.send(message, options);
++            return;
++        }
+         const activeSessions = Object.entries(this._transports);
+         if (activeSessions.length === 0) {
+             logger.warn('No active sessions to send message to');
+@@ -228,19 +280,19 @@ export class HttpStreamTransport extends AbstractTransport {
+         const failedSessions = [];
+         for (const [sessionId, transport] of activeSessions) {
+             try {
+-                await transport.send(message);
++                await transport.send(message, options);
              }
              catch (error) {
 -                logger.error(`Error sending message to session ${sessionId}: ${error}`);
@@ -82,7 +142,7 @@ index b535515..ad7f146 100644
          }
      }
      async close() {
-@@ -256,6 +284,11 @@ export class HttpStreamTransport extends AbstractTransport {
+@@ -256,6 +308,11 @@ export class HttpStreamTransport extends AbstractTransport {
              }
          }
          this._transports = {};

@@ -22,10 +22,10 @@ const server = new MCPServer({
       responseMode: "stream", // Response mode: "batch" or "stream" (default: "batch")
       batchTimeout: 30000, // Timeout for batch responses in ms (default: 30000)
       session: {
-        enabled: true,
-        headerName: "Mcp-Session-Id",
-        allowClientTermination: true,
-        sessionTimeout: 300000, // 5 minutes
+        // The service runs with multiple replicas. Keeping MCP sessions in process
+        // memory makes follow-up requests fail whenever the load balancer sends them
+        // to another replica, so every request must be independently routable.
+        enabled: false,
       },
       cors: {
         // CORS configuration
