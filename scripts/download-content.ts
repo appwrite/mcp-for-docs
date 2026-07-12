@@ -22,13 +22,11 @@ export async function downloadDocs() {
 }
 
 export async function downloadExamples() {
-  console.log(`Downloading examples from appwrite/appwrite (version: ${appwriteExamplesBranch})`);
+  console.log(`Downloading examples from appwrite/specs (version: ${appwriteExamplesBranch})`);
 
   const owner = "appwrite";
-  const repo = "appwrite";
-  const docsSubdirPath = `docs/examples/${appwriteExamplesBranch}`;
-  // The version-pinned example folders (docs/examples/<version>) only live on the
-  // `main` branch; they were removed from the per-version branches like 1.8.x.
+  const repo = "specs";
+  const docsSubdirPath = `examples/${appwriteExamplesBranch}`;
   const ref = "main";
 
   console.log(`Downloading examples from ${owner}/${repo}/${docsSubdirPath} to ${examplesTargetDir}`);

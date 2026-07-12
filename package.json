@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc && mcp-build",
+    "test": "node --test tests/*.test.mjs",
     "watch": "tsc --watch",
     "start": "node dist/index.js",
     "mcp-inspect": "mcp-inspector --transport http --server-url http://localhost:1234",
