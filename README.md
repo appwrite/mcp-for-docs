@@ -3,6 +3,10 @@
 </div>
 
 # Appwrite Docs MCP Server
+
+> [!WARNING]
+> This server is deprecated, and we plan to sunset it in the future. Users are advised to migrate to [appwrite/mcp](https://github.com/appwrite/mcp).
+
 This MCP server is a tool that allows IDEs (Cursor, Windsurf, Claude Code, etc.) to utilize the Appwrite documentation.
 
 ## Usage in your IDE (Cursor, Windsurf, Claude Code, etc.)
@@ -111,7 +115,3 @@ Here is a sample configuration file:
 ```
 
 The same configuration applies to any standard MCP client (Windsurf, Cursor, Claude, Claude Code, etc.).
-
-
-
-
