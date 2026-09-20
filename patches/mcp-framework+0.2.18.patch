@@ -85,11 +85,16 @@ diff --git a/node_modules/mcp-framework/dist/transports/http/server.js b/node_mo
                  }
              };
              transport.onerror = (error) => {
-@@ -172,6 +202,23 @@ export class HttpStreamTransport extends AbstractTransport {
+@@ -172,6 +202,28 @@ export class HttpStreamTransport extends AbstractTransport {
              await transport.handleRequest(req, res, body);
          });
      }
 +    async handleStatelessRequest(req, res, body, authData) {
++        if (req.method === 'GET' || req.method === 'DELETE') {
++            res.setHeader('Allow', 'POST, OPTIONS');
++            this.sendError(res, 405, -32000, 'Method Not Allowed: server is stateless');
++            return;
++        }
 +        const transport = new StreamableHTTPServerTransport({
 +            sessionIdGenerator: undefined,
 +            enableJsonResponse: this._enableJsonResponse,
@@ -109,7 +114,7 @@ diff --git a/node_modules/mcp-framework/dist/transports/http/server.js b/node_mo
      async readRequestBody(req) {
          return new Promise((resolve, reject) => {
              let body = '';
-@@ -214,11 +261,20 @@ export class HttpStreamTransport extends AbstractTransport {
+@@ -214,11 +266,20 @@ export class HttpStreamTransport extends AbstractTransport {
              id: null,
          }));
      }
@@ -131,7 +136,7 @@ diff --git a/node_modules/mcp-framework/dist/transports/http/server.js b/node_mo
          const activeSessions = Object.entries(this._transports);
          if (activeSessions.length === 0) {
              logger.warn('No active sessions to send message to');
-@@ -228,19 +284,19 @@ export class HttpStreamTransport extends AbstractTransport {
+@@ -228,19 +289,19 @@ export class HttpStreamTransport extends AbstractTransport {
          const failedSessions = [];
          for (const [sessionId, transport] of activeSessions) {
              try {
@@ -158,7 +163,7 @@ diff --git a/node_modules/mcp-framework/dist/transports/http/server.js b/node_mo
          }
      }
      async close() {
-@@ -256,6 +312,11 @@ export class HttpStreamTransport extends AbstractTransport {
+@@ -256,6 +317,11 @@ export class HttpStreamTransport extends AbstractTransport {
              }
          }
          this._transports = {};
