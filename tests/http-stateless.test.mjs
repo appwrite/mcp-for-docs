@@ -169,3 +169,17 @@ test("MCP framework handles initialize and tools/list on different replicas", as
     ["ping"],
   );
 });
+
+test("stateless GET and DELETE are refused instead of holding an SSE stream", async (t) => {
+  const { port, transport } = await createTransport(async () => {});
+  t.after(() => transport.close());
+
+  for (const method of ["GET", "DELETE"]) {
+    const response = await fetch(`http://127.0.0.1:${port}/`, {
+      method,
+      headers: { accept: "text/event-stream" },
+    });
+    assert.equal(response.status, 405);
+    await response.text();
+  }
+});
