@@ -34,7 +34,7 @@
     "front-matter": "^4.0.2",
     "giget": "^2.0.0",
     "mcp-framework": "^0.2.18",
-    "zod": "^3.25.76"
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "@modelcontextprotocol/inspector": "^0.16.8",
